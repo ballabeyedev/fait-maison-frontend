@@ -1,18 +1,18 @@
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import Login from "./pages/auth/Login";
 import Dashboard from "./pages/home/Dashboard";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 export default function App() {
   return (
     <BrowserRouter>
+      {/* TOAST CONTAINER EN DEHORS DE <Routes> */}
+      <ToastContainer position="top-right" autoClose={3000} />
+
       <Routes>
-        {/* Route de la page de connexion */}
         <Route path="/" element={<Login />} />
-
-        {/* Route du dashboard */}
         <Route path="/dashboard" element={<Dashboard />} />
-
-        {/* Redirection vers la page de login si route inconnue */}
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </BrowserRouter>
