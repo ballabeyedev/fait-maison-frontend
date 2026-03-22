@@ -84,7 +84,7 @@ export default function OverviewPanel({ showToast }) {
           <div className="db-stat-value">{c.val}</div>
           <div className="db-stat-label">{c.label}</div>
         </div>
-      ))}
+      ))} 
     </div>
   );
 }
