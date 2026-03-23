@@ -4,10 +4,11 @@ import "../../assets/css/Login.css";
 import LOGO from "../../assets/images/logo.jpeg";
 import { login, validateLoginForm, handleApiError } from "../../service/auth/authService";
 import { toast } from "react-toastify";
+import { Helmet } from "react-helmet"; 
 
 export default function Login() {
-  const [email, setEmail] = useState("admin@faitmaison.sn");
-  const [password, setPassword] = useState("admin123");
+  const [email, setEmail] = useState("exemple@gmail.com");
+  const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
@@ -40,6 +41,11 @@ export default function Login() {
 
   return (
     <div className="login-page">
+       {/* ✅ Titre dynamique */}
+      <Helmet>
+        <title>Fait Maison | LOGIN</title>
+        <link rel="icon" type="image/png" href={LOGO} />
+      </Helmet>
       <div className="login-card">
         <div className="login-logo-row">
           <img className="login-logo-img" src={LOGO} alt="Fait Maison" />

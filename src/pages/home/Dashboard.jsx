@@ -1,5 +1,7 @@
 import { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { Helmet } from "react-helmet"; // <-- Ajouté
+
 import "../../assets/css/Dashboard.css";
 
 import Sidebar from "../../components/layout/Sidebar.jsx";
@@ -18,6 +20,8 @@ import FormSelect from "../../components/common/FormSelect.jsx";
 
 import { PAGES } from "../../data/dashboardData.jsx";
 import { getUser } from "../../service/auth/authService.js";
+import LOGO from "../../assets/images/logo.jpeg"; // logo pour le favicon
+
 
 
 export default function Dashboard() {
@@ -32,12 +36,8 @@ export default function Dashboard() {
   // Récupérer info user connecté au montage du composant
   useEffect(() => {
     const u = getUser();
-    if (!u) {
-      // Si pas connecté, rediriger vers login
-      navigate("/");
-    } else {
-      setUser(u);
-    }
+    if (!u) navigate("/faitMaison/auth/login"); // redirection si pas connecté
+    else setUser(u);
   }, []);
 
   const showToast = (msg) => {
@@ -68,6 +68,10 @@ export default function Dashboard() {
 
   return (
     <div className="db-app">
+      <Helmet>
+        <title>Fait Maison | DASHBOARD</title>
+        <link rel="icon" type="image/png" href={LOGO} />
+      </Helmet>
       <Sidebar 
         sbOpen={sbOpen} 
         setSbOpen={setSbOpen} 
