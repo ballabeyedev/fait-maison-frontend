@@ -1,4 +1,4 @@
-import axios from 'axios'
+import axios from 'axios';
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
@@ -7,13 +7,17 @@ const api = axios.create({
   timeout: 10000,
 });
 
-// Auth utils
-export const setToken = (token) => {
-  api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
-};
+// 🔥 Interceptor automatique
+api.interceptors.request.use((config) => {
+  const token = localStorage.getItem("token");
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
+  return config;
+});
 
+// Utils
 export const clearAuth = () => {
-  delete api.defaults.headers.common['Authorization'];
   localStorage.removeItem('token');
   localStorage.removeItem('utilisateur');
 };

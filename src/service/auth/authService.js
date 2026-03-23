@@ -1,4 +1,4 @@
-import api, { setToken, setUser, clearAuth } from '../api';
+import api, { setUser, clearAuth } from '../api';
 
 /* Validation email */
 export const validateEmail = (value) => {
@@ -12,7 +12,9 @@ export const login = async (email, mot_de_passe) => {
     const response = await api.post('/auth/login', { email, mot_de_passe });
 
     const { token, utilisateur } = response.data;
-    setToken(token);
+
+    // 🔥 Stockage uniquement
+    localStorage.setItem("token", token);
     setUser(utilisateur);
 
     return utilisateur;
