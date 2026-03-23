@@ -1,10 +1,9 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "../../assets/css/Login.css";
+import LOGO from "../../assets/images/logo.jpeg";
 import { login, validateLoginForm, handleApiError } from "../../service/auth/authService";
 import { toast } from "react-toastify";
-
-const LOGO = "";
 
 export default function Login() {
   const [email, setEmail] = useState("admin@faitmaison.sn");
