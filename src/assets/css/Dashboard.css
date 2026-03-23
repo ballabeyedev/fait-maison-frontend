@@ -1072,3 +1072,31 @@ tbody tr:hover td { background: var(--gray); }
   letter-spacing: 0.08em;
   font-weight: 600;
 }
+
+
+.db-sb-mini-toggle {
+  position: fixed;
+  top: 20px;
+  left: 20px;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #4f46e5, #3b82f6); /* dégradé violet → bleu */
+  border: none;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.25);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.db-sb-mini-toggle:hover {
+  transform: scale(1.1);
+  box-shadow: 0 6px 16px rgba(0,0,0,0.35);
+}
+
+.db-sb-mini-toggle svg {
+  stroke: #fff;
+}

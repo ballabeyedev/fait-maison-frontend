@@ -28,7 +28,7 @@ export default function Login() {
 
       if (utilisateur.role === "Admin") {
         toast.success("Connexion réussie !");
-        navigate("/dashboard");
+        navigate("/faitMaison/admin/dashboard");
       } else {
         toast.error("Accès refusé. Admin uniquement.");
       }
