@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
-import { LOGO } from "../../data/dashboardData";
+import LOGO from "../../assets/images/logo.jpeg";
+
 import { 
   nombreClientsActifs,
   nombreVendeursActifs,
