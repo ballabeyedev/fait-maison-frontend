@@ -1,25 +1,50 @@
 import api from '../api';
 
+/* ============================================================
+   🛡️ CACHE LOCAL — évite les appels API répétés en rafale
+   TTL = durée de vie du cache en millisecondes (60 sec par défaut)
+   → Si fetchStats est appelé 2x en moins de 60s, la 2ème fois
+     retourne les données en cache sans toucher au serveur.
+============================================================ */
+const cache = {};
+const CACHE_TTL = 60 * 1000; // 60 secondes
+
+async function cachedGet(key, url) {
+  const now = Date.now();
+  const entry = cache[key];
+
+  // ✅ Retourne le cache si encore valide
+  if (entry && now - entry.timestamp < CACHE_TTL) {
+    return entry.data;
+  }
+
+  // Sinon appel API + mise en cache
+  const response = await api.get(url);
+  cache[key] = { data: response.data, timestamp: now };
+  return response.data;
+}
+
+/* Vider le cache manuellement (ex: après une action admin) */
+export const clearAdminCache = () => {
+  Object.keys(cache).forEach((k) => delete cache[k]);
+};
+
+
 /* ===========================
    👥 VENDEURS
 =========================== */
 
-/* Lister vendeurs */
 export const listerVendeurs = async () => {
-  const response = await api.get('/admin/lister-vendeurs');
+  const response = await api.get('/admin/liste-vendeurs');
   return response.data;
 };
 
-/* Nombre vendeurs actifs */
 export const nombreVendeursActifs = async () => {
-  const response = await api.get('/admin/nombre-vendeurs-actif');
-  return response.data;
+  return cachedGet('vendeurs-actifs', '/admin/nombre-vendeurs-actif');
 };
 
-/* Nombre vendeurs inactifs */
 export const nombreVendeursInactifs = async () => {
-  const response = await api.get('/admin/nombre-vendeurs-inactif');
-  return response.data;
+  return cachedGet('vendeurs-inactifs', '/admin/nombre-vendeurs-inactif');
 };
 
 
@@ -27,16 +52,13 @@ export const nombreVendeursInactifs = async () => {
    📦 PRODUITS
 =========================== */
 
-/* Lister produits actifs */
 export const listerProduitsActifs = async () => {
-  const response = await api.get('/admin/lister-produits-actifs');
+  const response = await api.get('/admin/liste-produits-actifs');
   return response.data;
 };
 
-/* Nombre produits actifs */
 export const nombreProduitsActifs = async () => {
-  const response = await api.get('/admin/nombre-produits-actifs');
-  return response.data;
+  return cachedGet('produits-actifs', '/admin/nombre-produits-actifs');
 };
 
 
@@ -44,22 +66,17 @@ export const nombreProduitsActifs = async () => {
    👤 CLIENTS
 =========================== */
 
-/* Lister clients */
 export const listerClients = async () => {
-  const response = await api.get('/admin/lister-clients');
+  const response = await api.get('/admin/liste-clients');
   return response.data;
 };
 
-/* Nombre clients actifs */
 export const nombreClientsActifs = async () => {
-  const response = await api.get('/admin/nombre-clients-actifs');
-  return response.data;
+  return cachedGet('clients-actifs', '/admin/nombre-clients-actifs');
 };
 
-/* Nombre clients inactifs */
 export const nombreClientsInactifs = async () => {
-  const response = await api.get('/admin/nombre-clients-inactifs');
-  return response.data;
+  return cachedGet('clients-inactifs', '/admin/nombre-clients-inactifs');
 };
 
 
@@ -67,7 +84,6 @@ export const nombreClientsInactifs = async () => {
    🗂️ CATEGORIES
 =========================== */
 
-/* Créer catégorie */
 export const creerCategorie = async (data) => {
   const response = await api.post('/admin/creer-categorie', data);
   return response.data;

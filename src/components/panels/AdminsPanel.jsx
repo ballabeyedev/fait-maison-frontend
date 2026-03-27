@@ -2,16 +2,14 @@ import { useState } from "react";
 import Modal from "../common/Modal";
 import FormInput from "../common/FormInput";
 import FormSelect from "../common/FormSelect";
-import { INIT_ADMINS } from "../../data/dashboardData";
 
 export default function AdminsPanel({ showToast }) {
-  const [admins, setAdmins]   = useState(INIT_ADMINS);
+  const [setAdmins]   = useState();
   const [openMod, setOpenMod] = useState(null);
   const [form, setForm]       = useState({ name: "", email: "", role: "admin", pass: "" });
   const [editIdx, setEditIdx] = useState(null);
 
   const openAdd  = () => { setForm({ name: "", email: "", role: "admin", pass: "" }); setEditIdx(null); setOpenMod("add"); };
-  const openEdit = (i) => { setForm({ ...admins[i], pass: "" }); setEditIdx(i); setOpenMod("edit"); };
   const close    = () => setOpenMod(null);
 
   const saveAdd = () => {
@@ -46,18 +44,7 @@ export default function AdminsPanel({ showToast }) {
       </div>
 
       <div className="db-admin-list">
-        {admins.map((a, i) => (
-          <div className="db-admin-entry" key={i}>
-            <div className="db-admin-entry-ava">{a.ini}</div>
-            <div className="db-admin-entry-info">
-              <div className="db-admin-entry-name">{a.name}</div>
-              <div className="db-admin-entry-meta">{a.email} · {a.date}</div>
-            </div>
-            <span className={a.role==="super" ? "badge bgo" : "badge bg"}>{a.role==="super"?"Super Admin":"Admin"}</span>
-            <button className="db-btn-ghost" onClick={() => openEdit(i)}>Modifier</button>
-            <button className="db-btn-danger" onClick={() => del(i)}>Suppr.</button>
-          </div>
-        ))}
+       
       </div>
 
       <Modal id="add"  title="Nouvel administrateur"       openId={openMod} onClose={close}><FormBody /><div className="db-modal-footer"><button className="db-btn secondary" onClick={close}>Annuler</button><button className="db-btn primary" onClick={saveAdd}>Créer</button></div></Modal>
