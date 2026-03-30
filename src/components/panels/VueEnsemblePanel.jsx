@@ -84,19 +84,39 @@ export default function VueEnsemblePanel({ showToast }) {
       label: "Clients inactifs",
       val: stats.clientsInactifs,
       color: "gray",
-      icon: <circle cx="12" cy="12" r="10" />,
+      icon: (
+        <>
+          <circle cx="9" cy="7" r="4" />
+          <path d="M3 21v-2a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v2" />
+          <line x1="17" y1="7" x2="23" y2="13" strokeWidth={2} />
+          <line x1="23" y1="7" x2="17" y2="13" strokeWidth={2} />
+        </>
+      ),
     },
     {
       label: "Vendeurs actifs",
       val: stats.vendeursActifs,
       color: "gold",
-      icon: <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />,
+      icon: (
+        <>
+          <path d="M20 7H4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2z" />
+          <path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2" />
+          <line x1="12" y1="12" x2="12" y2="12" strokeWidth={3} />
+        </>
+      ),
     },
     {
       label: "Vendeurs inactifs",
       val: stats.vendeursInactifs,
       color: "orange",
-      icon: <path d="M4 4h16v16H4z" />,
+      icon: (
+        <>
+          <path d="M20 7H4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2z" />
+          <path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2" />
+          <line x1="10" y1="10" x2="14" y2="14" strokeWidth={2} />
+          <line x1="14" y1="10" x2="10" y2="14" strokeWidth={2} />
+        </>
+      ),
     },
     {
       label: "Produits publiés",
@@ -106,6 +126,7 @@ export default function VueEnsemblePanel({ showToast }) {
         <>
           <path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z" />
           <line x1="3" y1="6" x2="21" y2="6" />
+          <path d="M16 10a4 4 0 0 1-8 0" />
         </>
       ),
     },
@@ -121,7 +142,6 @@ export default function VueEnsemblePanel({ showToast }) {
       ),
     },
   ];
-
   return (
     <div>
       {/* Bouton Actualiser */}
@@ -129,17 +149,17 @@ export default function VueEnsemblePanel({ showToast }) {
         <button
           onClick={fetchStats}
           disabled={loading}
-          style={{
-            padding: "8px 16px",
-            background: "#007bff",
-            color: "#fff",
-            border: "none",
-            borderRadius: "5px",
-            cursor: loading ? "not-allowed" : "pointer",
-            opacity: loading ? 0.7 : 1,
-          }}
+       style={{
+        padding: "8px 16px",
+        background: "#fff",
+        color: "#22c55e",
+        border: "1.5px solid #22c55e",
+        borderRadius: "5px",
+        cursor: loading ? "not-allowed" : "pointer",
+        opacity: loading ? 0.7 : 1,
+}}
         >
-          {loading ? "Chargement..." : "🔄 Actualiser"}
+          {loading ? "Chargement..." : "↻ Actualiser"}
         </button>
       </div>
 

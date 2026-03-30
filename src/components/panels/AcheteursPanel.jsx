@@ -1,7 +1,7 @@
-import { useEffect, useState, useCallback } from "react";import Card from "../common/Card";
-import Filters from "../common/Filters";
+import { useEffect, useState, useCallback } from "react";
+import Card from "../common/Card";
 import { statusBadge } from "../../helpers/statusBadge";
-import { fetchAcheteurData, filterAcheteur } from "../../data/dashboardData";
+import { fetchAcheteurData } from "../../data/dashboardData";
 
 export default function AcheteursPanel({ onModal, showToast }) {
   const [acheteurs, setAcheteurs] = useState([]);
@@ -25,7 +25,14 @@ export default function AcheteursPanel({ onModal, showToast }) {
     loadAcheteurs();
   }, [loadAcheteurs]);
 
-  const filtered = filterAcheteur(acheteurs, search);
+  const filtered = acheteurs.filter((a) => {
+    const q = search.toLowerCase().trim();
+    if (!q) return true;
+    const nomComplet = `${a.prenom ?? ""} ${a.nom ?? ""}`.toLowerCase();
+    const email = (a.email ?? "").toLowerCase();
+    const tel = (a.telephone ?? "").toLowerCase();
+    return nomComplet.includes(q) || email.includes(q) || tel.includes(q);
+  });
 
   const openModal = (a) => {
     setSelectedAcheteur(a);
@@ -38,26 +45,87 @@ export default function AcheteursPanel({ onModal, showToast }) {
   };
 
   const toggleStatus = (acheteur) => {
-    setAcheteurs(prev =>
-      prev.map(a => a.id === acheteur.id ? { ...a, actif: !a.actif } : a)
+    setAcheteurs((prev) =>
+      prev.map((a) => (a.id === acheteur.id ? { ...a, actif: !a.actif } : a))
     );
     showToast(`Statut changé pour ${acheteur.prenom} ${acheteur.nom}`);
   };
 
   const deleteAcheteur = (id) => {
-    setAcheteurs(prev => prev.filter(a => a.id !== id));
+    setAcheteurs((prev) => prev.filter((a) => a.id !== id));
     showToast("Acheteur supprimé");
   };
 
   return (
     <>
-
       <Card
         title="Acheteurs"
         right={
-          <span style={{ fontSize: ".8rem", color: "var(--text3)" }}>
-            {filtered.length} au total
-          </span>
+          <div style={{ display: "flex", alignItems: "center", gap: "16px" }}>
+            {/* ✅ Barre de recherche dans le header à droite */}
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                gap: "8px",
+                padding: "6px 12px",
+                border: "1px solid #e0e0e0",
+                borderRadius: "8px",
+                background: "transparent",
+                width: "260px",
+              }}
+            >
+              <svg
+                width="15"
+                height="15"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="#999"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                style={{ flexShrink: 0 }}
+              >
+                <circle cx="11" cy="11" r="8" />
+                <line x1="21" y1="21" x2="16.65" y2="16.65" />
+              </svg>
+              <input
+                type="text"
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                placeholder="Rechercher par nom, email, tél…"
+                style={{
+                  border: "none",
+                  outline: "none",
+                  background: "transparent",
+                  fontSize: ".82rem",
+                  color: "var(--text1, #333)",
+                  width: "100%",
+                }}
+              />
+              {search && (
+                <button
+                  onClick={() => setSearch("")}
+                  style={{
+                    background: "none",
+                    border: "none",
+                    cursor: "pointer",
+                    color: "#999",
+                    fontSize: "1rem",
+                    padding: 0,
+                    lineHeight: 1,
+                    flexShrink: 0,
+                  }}
+                >
+                  ✕
+                </button>
+              )}
+            </div>
+
+            <span style={{ fontSize: ".8rem", color: "var(--text3)", whiteSpace: "nowrap" }}>
+              {filtered.length} au total
+            </span>
+          </div>
         }
       >
         {loading ? (
@@ -76,41 +144,65 @@ export default function AcheteursPanel({ onModal, showToast }) {
                 </tr>
               </thead>
               <tbody>
-                {filtered.map((a) => (
-                  <tr key={a.id}>
-                    <td>
-                      {a.photoProfil ? (
-                        <img
-                          src={a.photoProfil}
-                          alt={a.nom}
-                          className="db-avatar"
-                        />
-                      ) : (
-                        <div className="db-avatar-placeholder">
-                          {(a.prenom?.[0] || "") + (a.nom?.[0] || "")}
-                        </div>
-                      )}
-                    </td>
-                    <td className="db-td-bold">{a.prenom} {a.nom}</td>
-                    <td>{a.email || "—"}</td>
-                    <td>{a.telephone || "—"}</td>
-                    <td>
-                      <span className={statusBadge(a.actif ? "Actif" : "Inactif")}>
-                        {a.actif ? "Actif" : "Inactif"}
-                      </span>
-                    </td>
-                    <td>
-                      <div className="db-actions">
-                        <button className="db-btn-ghost" onClick={() => openModal(a)}>
-                          Voir
-                        </button>
-                        <button className="db-btn-danger" onClick={() => deleteAcheteur(a.id)}>
-                          Supprimer
-                        </button>
-                      </div>
+                {filtered.length === 0 ? (
+                  <tr>
+                    <td
+                      colSpan={6}
+                      style={{
+                        textAlign: "center",
+                        padding: "24px",
+                        color: "var(--text3, #aaa)",
+                        fontSize: ".9rem",
+                      }}
+                    >
+                      Aucun acheteur trouvé
                     </td>
                   </tr>
-                ))}
+                ) : (
+                  filtered.map((a) => (
+                    <tr key={a.id}>
+                      <td>
+                        {a.photoProfil ? (
+                          <img
+                            src={a.photoProfil}
+                            alt={a.nom}
+                            className="db-avatar"
+                          />
+                        ) : (
+                          <div className="db-avatar-placeholder">
+                            {(a.prenom?.[0] || "") + (a.nom?.[0] || "")}
+                          </div>
+                        )}
+                      </td>
+                      <td className="db-td-bold">
+                        {a.prenom} {a.nom}
+                      </td>
+                      <td>{a.email || "—"}</td>
+                      <td>{a.telephone || "—"}</td>
+                      <td>
+                        <span className={statusBadge(a.actif ? "Actif" : "Inactif")}>
+                          {a.actif ? "Actif" : "Inactif"}
+                        </span>
+                      </td>
+                      <td>
+                        <div className="db-actions">
+                          <button
+                            className="db-btn-ghost"
+                            onClick={() => openModal(a)}
+                          >
+                            Voir
+                          </button>
+                          <button
+                            className="db-btn-danger"
+                            onClick={() => deleteAcheteur(a.id)}
+                          >
+                            Supprimer
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))
+                )}
               </tbody>
             </table>
           </div>
@@ -148,7 +240,13 @@ export default function AcheteursPanel({ onModal, showToast }) {
 
               <div className="db-modal-banner-title db-modal-banner-title--centered">
                 <h3>{selectedAcheteur.prenom} {selectedAcheteur.nom}</h3>
-                <span className={`db-modal-seller-status ${selectedAcheteur.actif ? "db-modal-seller-status--actif" : "db-modal-seller-status--inactif"}`}>
+                <span
+                  className={`db-modal-seller-status ${
+                    selectedAcheteur.actif
+                      ? "db-modal-seller-status--actif"
+                      : "db-modal-seller-status--inactif"
+                  }`}
+                >
                   {selectedAcheteur.actif ? "● Actif" : "● Inactif"}
                 </span>
               </div>
@@ -156,8 +254,6 @@ export default function AcheteursPanel({ onModal, showToast }) {
 
             {/* Corps */}
             <div className="db-modal-body">
-
-              {/* Infos de contact */}
               <div className="db-modal-section">
                 <p className="db-modal-section-label">Informations de contact</p>
                 <div className="db-modal-contact-grid">
@@ -187,7 +283,6 @@ export default function AcheteursPanel({ onModal, showToast }) {
                 </div>
               </div>
 
-              {/* Stats rapides */}
               <div className="db-modal-stats">
                 <div className="db-modal-stat">
                   <span className="db-modal-stat-label">Produits</span>
@@ -207,28 +302,43 @@ export default function AcheteursPanel({ onModal, showToast }) {
                   <span className="db-modal-stat-label">Membre depuis</span>
                   <span className="db-modal-stat-value" style={{ fontSize: ".82rem" }}>
                     {selectedAcheteur.createdAt
-                      ? new Date(selectedAcheteur.createdAt).toLocaleDateString("fr-FR", { month: "short", year: "numeric" })
+                      ? new Date(selectedAcheteur.createdAt).toLocaleDateString("fr-FR", {
+                          month: "short",
+                          year: "numeric",
+                        })
                       : "—"}
                   </span>
                 </div>
               </div>
-
             </div>
 
             {/* Footer */}
             <div className="db-modal-footer">
-              <button className="db-modal-btn db-modal-btn--secondary" onClick={closeModal}>
+              <button
+                className="db-modal-btn db-modal-btn--secondary"
+                onClick={closeModal}
+              >
                 Fermer
               </button>
               <button
-                className={`db-modal-btn ${selectedAcheteur.actif ? "db-modal-btn--warning" : "db-modal-btn--success"}`}
-                onClick={() => { toggleStatus(selectedAcheteur); closeModal(); }}
+                className={`db-modal-btn ${
+                  selectedAcheteur.actif
+                    ? "db-modal-btn--warning"
+                    : "db-modal-btn--success"
+                }`}
+                onClick={() => {
+                  toggleStatus(selectedAcheteur);
+                  closeModal();
+                }}
               >
                 {selectedAcheteur.actif ? "Désactiver" : "Activer"}
               </button>
               <button
                 className="db-modal-btn db-modal-btn--danger"
-                onClick={() => { deleteAcheteur(selectedAcheteur.id); closeModal(); }}
+                onClick={() => {
+                  deleteAcheteur(selectedAcheteur.id);
+                  closeModal();
+                }}
               >
                 Supprimer
               </button>
